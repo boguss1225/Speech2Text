@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 import { CSVReader } from 'react-papaparse'
 
@@ -7,9 +7,7 @@ const buttonRef = React.createRef()
 
 export default function csvReader(props) {
     const {setData} = props
-    function handleClick(){
-        
-    }
+
     function handleOpenDialog(e){
         // Note that the ref is set async, so it might be null at some point 
         if (buttonRef.current) {
@@ -18,17 +16,17 @@ export default function csvReader(props) {
       }
       
     function handleOnFileLoad(data){
-        setData(data)
+        let newData = data.map((element)=>{
+          return element.data
+        })
+        setData(newData)
       }
     
     function handleOnError(err, file, inputElem, reason){
-        console.log(err)
+
       }
     
     function handleOnRemoveFile(data){
-        console.log('---------------------------')
-        console.log(data)
-        console.log('---------------------------')
       }
     
     function handleRemoveFile(e){
@@ -57,14 +55,7 @@ export default function csvReader(props) {
               <button
                 type='button'
                 onClick={handleOpenDialog}
-                style={{
-                  borderRadius: 0,
-                  marginLeft: 0,
-                  marginRight: 0,
-                  width: '40%',
-                  paddingLeft: 0,
-                  paddingRight: 0
-                }}
+                className = "btn-import"
               >
                 Choose CSV File
               </button>
