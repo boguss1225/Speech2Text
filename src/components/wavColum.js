@@ -7,7 +7,7 @@ export default function WavColum(props) {
     // check whether upload audio file has matched row in CSV file
     function isDataExist(){
         for(let i = 0; i<data.length; i++){
-           if(thisFileName === data[i].data[0]){
+           if(thisFileName === data[i][0]){
                return true
            }
         }
@@ -33,21 +33,18 @@ export default function WavColum(props) {
         }
         //find matched row in CSV file, setText in the textarea to matched content
         for(let i = 0; i < data.length ; i++){
-            let fileNameFromCSV = data[i].data[0]
-            let fileContentFromCSV = data[i].data[1]
+            let fileNameFromCSV = data[i][0]
+            let fileContentFromCSV = data[i][1]
             if(thisFileName === fileNameFromCSV){
-                setText(fileContentFromCSV)
+                setText({fileName:fileNameFromCSV, fileContent:fileContentFromCSV})
             }
         }
         // change style each time span is clicked
         const spans = document.getElementsByTagName('span')
-        for(let i = 0; i< spans.length ; i++){
-            spans[i].className=""
-        }
         isActive ? setIsActive(false) : setIsActive(true)        
     }
 
     return (
-      <span className={isActive ? "active" : null}   onClick={()=>handleSpanClick(wavName)}> {wavName} </span>
+      <button className="btn-span"   onClick={()=>handleSpanClick(wavName)}> {wavName} </button>
     )
 }

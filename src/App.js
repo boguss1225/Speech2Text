@@ -3,19 +3,40 @@ import './App.css';
 import WavColum from './components/wavColum'
 import Audio from './components/Audio'
 import CSVReader from './components/CSVReader'
+import {CSVLink} from 'react-csv'
+
+//TODO: audio file input type restriction 
+
 function App() {
   const [path, setPath] = useState("")
   const [wavNames, setWavNames] = useState([])
-  const [text,setText] = useState("CSV File Contents, Currently there is no matched data from CSV files")
+  const [text,setText] = useState({fileName:"0", fileContent: "CSV File Contents, Currently there is no matched data from CSV files"})
   const [data,setData] = useState([])
   const [files,setFiles] = useState([])
-  
+  var csvData = data
   let newWavNames = []
   let newFilesArray = []
   function hanldeTextChange(e) {
     const {value} = e.target
-    setText(value)
+    setText({fileName:text.fileName, fileContent:value})
 }
+
+// save btn click event; save modified text and data to related state
+  function handleSaveClick(){
+    // use text.fileName state to identify which row to rewrite
+    let thisFileName = text.fileName
+    let newDataArray = Array.from(data)
+    newDataArray.forEach((element)=>{
+      let loopedFileName = element[0]
+      // locate the position where we want to change the content
+      if(thisFileName === loopedFileName){
+        element[1] = text.fileContent
+        setData(newDataArray)
+        setText({fileName:thisFileName,fileContent:element[1]})
+        return
+      }
+    })
+  }
 
   function handleFolderChange(e){
     for (let file of e.target.files){
@@ -26,25 +47,29 @@ function App() {
         setFiles(newFilesArray)
         setPath(URL.createObjectURL(file))
       }
-      console.log(file.type)
-      if(file.type === "application/vnd.ms-excel" || file.name){
-
+      else{
+        return
       }
   }
   }
 
+  // user interface
   return (
     <>
       <div className="text-editor-c">
         <div className ="content-wrap">
           <CSVReader setData = {setData}/> 
           <div className="folder-input-row" >
-            <input id="folder" type="file" webkitdirectory = "true" onChange = {(e)=>{
-              handleFolderChange(e) 
+            <input id="folder" 
+                   type="file" 
+                   webkitdirectory = "true" 
+                   className = "btn-import"
+                   onChange = {(e)=>{
+                    handleFolderChange(e) 
             }}/>
           </div>
           <textarea className="csv-file-row"
-                    value = {text}
+                    value = {text.fileContent}
                     onChange = {hanldeTextChange}>
 
           </textarea>
@@ -64,7 +89,10 @@ function App() {
       </div>
       <div className = "audio-row">
         <Audio path={path}/>
-        <button className = "btn-save">save</button>
+        <div>        
+          <button className = "btn-save" onClick = {handleSaveClick} >Save</button>
+          <CSVLink data={csvData}>Download CSV</CSVLink>
+        </div>
       </div>
     </>
   );
